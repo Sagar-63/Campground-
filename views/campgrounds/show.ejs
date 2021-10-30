@@ -1,0 +1,80 @@
+<!-- <%layout('layouts/boilerplate')%>
+    
+    <h1><%= campground.title %></h1>
+    <h2><%= campground.location %></h2>
+    <image src='<%=campground.image%>' height='500px' width='500px'></image>
+    <p><%=campground.description%></p>
+    <a href='/campgrounds'>All Campgrounds</a>
+    <a href='/campgrounds/<%=campground._id%>/edit'>Edit Campground</a>
+    <form action='/campgrounds/<%=campground._id%>?_method=DELETE' method='POST'>
+        <button>DELETE</button>
+    </form> -->
+
+
+    <% layout('layouts/boilerplate')%>
+  <link rel="stylesheet" href="/stylesheets/stars.css">
+<div class="row">
+    <div class="col-6 offset-3">
+        <div class="card mb-3">
+          <%for(let img of campground.images){%>
+            <img src="<%= img.url%>" class="card-img-top" alt="...">
+           <% } %>
+            
+            <div class="card-body">
+                <h5 class="card-title"><%= campground.title%></h5>
+                <p class="card-text"><%= campground.description%></p>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-muted"><%= campground.location%></li>
+                <li class="list-group-item">Submitted by: <%= campground.author.username%></li>
+                <li class="list-group-item">$<%= campground.price%>/night</li>
+            </ul>
+           <% if(currentUser && campground.author.equals(currentUser._id)){%>
+            <div class="card-body">
+                <a class="card-link btn btn-info" href="/campgrounds/<%=campground._id%>/edit">Edit</a>
+                <form class="d-inline" action="/campgrounds/<%=campground._id%>?_method=DELETE" method="POST">
+                    <button class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+           <% }%>   
+            <div class="card-footer text-muted">
+                2 days ago
+            </div>
+        </div>
+       <% if(currentUser){ %>
+        <h2>Leave A Review</h2>
+        <form action="/campgrounds/<%=campground._id%>/reviews" method="POST" class="mb-3 validated-form" novalidate>
+            <div class="mb-3">
+                <label class="form-label" for="rating">Rating</label>
+                <input class="form-range" type="range" min="1" max="5" name="review[rating]" id="rating">
+            </div>
+          <div class="mb-3">
+              <label class="form-label" for="body">Review</label>
+              <textarea class="form-control" name="review[body]" id="body" cols="3" rows="10" required></textarea>
+          </div>
+          <button class="btn btn-success">Submit</button>
+        </form>
+        <% } %>
+       <% for(let review of campground.reviews){%>
+       <div class="card mb-3">
+         <div class="card-body">
+            <h6 class="card-subtitle mb-2 text-muted">By: <%= review.author.username%></h6>
+             <h5 class="card-title">
+                <p class="starability-result" data-rating="<%=review.rating%>">
+                    Rated: <%=review.rating%> stars
+                  </p>
+             </h5>
+             
+             
+             <p class="card-text">Review:  <%=review.body%></p>
+
+             <% if(currentUser && review.author.equals(currentUser._id)){%>
+             <form action="/campgrounds/<%=campground._id%>/reviews/<%=review._id%>?_method=DELETE" method="POST">
+            <button class="btn btn-sm btn-danger">DELETE</button>
+            </form>
+        <%}%>
+         </div>
+       </div>
+       <%}%>
+    </div>
+</div>
