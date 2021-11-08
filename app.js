@@ -11,8 +11,8 @@ const ejsMate=require('ejs-mate'); //Changing the default ejs parser and using t
 const Joi=require('joi');
 const {campgroundSchema,reviewSchema}=require('./schema');
 const methodOverride=require('method-override');
- const dbUrl='mongodb://localhost:27017/yelpcamp'
-// const dbUrl=process.env.DB_URL;
+ //const dbUrl='mongodb://localhost:27017/yelpcamp'
+const dbUrl=process.env.DB_URL || 'mongodb://localhost:27017/yelpcamp';
 mongoose.connect(dbUrl,{
     useNewUrlParser:true,     //use of these params
     //useCreateIndex:true,   why db is not connected when this is set to true 
@@ -43,9 +43,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 const User=require('./models/user');
 app.engine('ejs',ejsMate);
 
+const secret=process.env.SECRET || 'thisshouldbeabettersecret!';
+
 const store=new MongoDBStore({
     url:dbUrl,
-    secret:'thisshouldbeabettersecret!',
+    secret,
     touchAfter:24*60*60   //in seconds
 })
 
@@ -55,7 +57,7 @@ store.on("error",function(e) {
 
 const sessionConfig={
     store,
-    secret: 'thisshouldbeabettersecret!',
+    secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
